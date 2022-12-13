@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
@@ -11,22 +11,24 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-// import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'universal-cookie';
 
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+// function Copyright(props: any) {
+//   return (
+//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
+//       {'Copyright © '}
+//       <Link color="inherit" href="https://mui.com/">
+//         Your Website
+//       </Link>{' '}
+//       {new Date().getFullYear()}
+//       {'.'}
+//     </Typography>
+//   );
+// }
 
 const theme = createTheme();
 
@@ -34,7 +36,7 @@ export default function Login() {
   
   const navigate = useNavigate ()
   
-  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(event: any) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const dd = {
@@ -42,19 +44,33 @@ export default function Login() {
       password: data.get('password'),
     }; 
 
-    console.log({dd});
+    // console.log({dd});
+
+  const cookies = new Cookies();
 
     try {
-        await axios.post("/api/v1/client/auth/login",dd).then((res)=>{
-          console.log(res.data)
+        await axios.post("/api/v1/client/auth/login",dd).then((req)=>{
+          const token : String = req.data?.token
+          if(!req.data?.error)
+          {   
+            cookies.set('accessToken', token,  { path: '/'});
+            // console.log(cookies.get('myCat'));        
             navigate('/')
+          }else{
+            toast.error(req.data?.message, {
+              position: toast.POSITION.TOP_RIGHT
+            }); 
+          }
         })
     } catch (error) {
-        console.log(error)
+      console.log(error)
     }
 
   };
+
   return (
+    <>
+    {/* <button >Notify</button> */}
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
@@ -117,6 +133,7 @@ export default function Login() {
             >
               Sign Up
             </Button>
+            <ToastContainer />
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="#" variant="body2">
@@ -129,5 +146,7 @@ export default function Login() {
         </Grid>
       </Grid>
     </ThemeProvider>
+    </>
+
   );
 }

@@ -11,9 +11,10 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-// import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Copyright(props: any) {
   return (
@@ -34,7 +35,7 @@ export default function Register() {
   
   const navigate = useNavigate ()
   
-  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(event: any) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const dd = {
@@ -51,27 +52,22 @@ export default function Register() {
     console.log({dd});
 
     try {
-        await axios.post("/api/v1/client/auth/register",dd).then((res)=>{
-          console.log(res.data)
+        await axios.post("/api/v1/client/auth/register",dd).then((req)=>{
+          console.log(req?.data?.error)
+          if(!req.data?.error)
+          {           
             navigate('/')
+          }else{
+            toast.error(req.data?.message, {
+              position: toast.POSITION.TOP_RIGHT
+            }); 
+          }
         })
     } catch (error) {
         console.log(error)
     }
 
   };
-
-//   const newFunction = async (event: React.FormEvent<HTMLFormElement>) =>{
-//     event.preventDefault()
-//     try {
-//         await axios.post("/api/users",formData).then((res)=>{
-//          console.log(res.data)
-//             // navigate('/')
-//         })
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
 
   return (
     <ThemeProvider theme={theme}>
@@ -199,6 +195,7 @@ export default function Register() {
             >
               Sign Up
             </Button>
+            <ToastContainer />
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="#" variant="body2">
