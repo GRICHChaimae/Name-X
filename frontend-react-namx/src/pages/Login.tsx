@@ -51,9 +51,16 @@ export default function Login() {
     try {
         await axios.post("/api/v1/client/auth/login",dd).then((req)=>{
           const token : String = req.data?.token
+          var now = new Date();
+          var time = now.getTime();
+          time += 3600 * 1000;
+          now.setTime(time);
+
           if(!req.data?.error)
           {   
-            cookies.set('accessToken', token,  { path: '/'});
+            // cookies.set('accessToken', token,  { path: '/', expire: 0.5}); 
+            document.cookie = 'accessToken=' + token + '; expires=' + now.toUTCString() + ';path=/'
+
             // console.log(cookies.get('myCat'));        
             navigate('/')
           }else{
