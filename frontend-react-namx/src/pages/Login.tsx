@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -17,18 +16,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'universal-cookie';
 
-// function Copyright(props: any) {
-//   return (
-//     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
 
 const theme = createTheme();
 
@@ -44,10 +31,6 @@ export default function Login() {
       password: data.get('password'),
     }; 
 
-    // console.log({dd});
-
-  const cookies = new Cookies();
-
     try {
         await axios.post("/api/v1/client/auth/login",dd).then((req)=>{
           const token : String = req.data?.token
@@ -58,10 +41,7 @@ export default function Login() {
 
           if(!req.data?.error)
           {   
-            // cookies.set('accessToken', token,  { path: '/', expire: 0.5}); 
             document.cookie = 'accessToken=' + token + '; expires=' + now.toUTCString() + ';path=/'
-
-            // console.log(cookies.get('myCat'));        
             navigate('/')
           }else{
             toast.error(req.data?.message, {
@@ -77,7 +57,6 @@ export default function Login() {
 
   return (
     <>
-    {/* <button >Notify</button> */}
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
